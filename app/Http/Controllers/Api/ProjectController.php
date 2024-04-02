@@ -13,11 +13,9 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::whereIsCompleted(true)->latest()->get();
+        $projects = Project::whereIsCompleted(true)->latest()->with('type', 'technologies')->get();
 
-        foreach ($projects as $project) {
-            if ($project->image) $project->image = url('/storage' . $project->image);
-        }
+
         return response()->json($projects);
     }
 
@@ -32,9 +30,11 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Project $project)
+    public function show(string $project)
     {
-        //
+        $project = Project::whereIsCompleted(true)->find($project);
+        if (!$project) return response(null, 404);
+        return response()->json($project);
     }
 
     /**
